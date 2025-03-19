@@ -64,7 +64,7 @@ def init_from_known_poses(self, niter_PnP=10, min_conf_thr=3):
 
 
 @torch.no_grad()
-def init_minimum_spanning_tree(self, focal_avg=False, known_focal=None, **kw):
+def init_minimum_spanning_tree(self, **kw):
     """ Init all camera poses (image-wise and pairwise poses) given
         an initial set of pairwise estimations.
     """
@@ -73,18 +73,6 @@ def init_minimum_spanning_tree(self, focal_avg=False, known_focal=None, **kw):
                                                           self.pred_i, self.pred_j, self.conf_i, self.conf_j, self.im_conf, self.min_conf_thr,
                                                           device, has_im_poses=self.has_im_poses, verbose=self.verbose,
                                                           **kw)
-
-    if known_focal is not None:
-        repeat_focal = np.repeat(known_focal, len(im_focals))
-        for i in range(len(im_focals)):
-            im_focals[i] = known_focal
-        self.preset_focal(known_focals=repeat_focal)
-    elif focal_avg:
-        im_focals_avg = np.array(im_focals).mean()
-        for i in range(len(im_focals)):
-            im_focals[i] = im_focals_avg
-        repeat_focal = np.array(im_focals)#.cpu().numpy()
-        self.preset_focal(known_focals=repeat_focal)
 
     return init_from_pts3d(self, pts3d, im_focals, im_poses)
 
@@ -312,7 +300,7 @@ def get_known_focals(self):
     if self.has_im_poses:
         known_focal_msk = self.get_known_focal_mask()
         known_focals = self.get_focals()
-        return known_focal_msk.sum(), known_focal_msk, known_focals
+        return len(known_focal_msk), known_focal_msk, known_focals
     else:
         return 0, None, None
 

@@ -91,6 +91,9 @@ class ModularPointCloudOptimizer (BasePCOptimizer):
             param.data[:] = self.focal_brake * np.log(focal)
         return param
 
+    def get_known_focal_mask(self):
+        return [f.requires_grad for f in self.im_focals]
+    
     def get_focals(self):
         log_focals = torch.stack(list(self.im_focals), dim=0)
         return (log_focals / self.focal_brake).exp()

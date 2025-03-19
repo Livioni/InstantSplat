@@ -19,7 +19,7 @@ from dust3r.cloud_opt import global_aligner, GlobalAlignerMode
 from utils.sfm_utils import (save_intrinsics, save_extrinsic, save_points3D, save_time, save_images_and_masks,
                              init_filestructure, get_sorted_image_files, split_train_test, load_images, compute_co_vis_masks)
 from utils.camera_utils import generate_interpolated_path
-
+from misc import read_params_from_json
 
 def main(source_path, model_path, ckpt_path, device, batch_size, image_size, schedule, lr, niter, 
          min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, conf_aware_ranking=False, focal_avg=False, infer_video=False):
@@ -37,15 +37,20 @@ def main(source_path, model_path, ckpt_path, device, batch_size, image_size, sch
     # when geometry init, only use train images
     image_files = train_img_files
     images, org_imgs_shape = load_images(image_files, size=image_size)
-
+    parmas_file_path = "assets/carla/town10/params"
+    parmas_files = np.sort(os.listdir(parmas_file_path))
+    intrinsics, extrinsics = read_params_from_json(parmas_file_path, parmas_files, old_size=(1920, 1080), new_size=(512, 288))
+    
     start_time = time()
     print(f'>> Making pairs...')
     pairs = make_pairs(images, scene_graph='complete', prefilter=None, symmetrize=True)
     print(f'>> Inference...')
     output = inference(pairs, model, device, batch_size=1, verbose=True)
     print(f'>> Global alignment...')
-    scene = global_aligner(output, device=args.device, mode=GlobalAlignerMode.PointCloudOptimizer)
-    loss = scene.compute_global_alignment(init="mst", niter=300, schedule=schedule, lr=lr, focal_avg=args.focal_avg)
+    scene = global_aligner(output, device=args.device, mode=GlobalAlignerMode.ModularPointCloudOptimizer, fx_and_fy=True)
+    scene.preset_pose(extrinsics,[True] * len(extrinsics))
+    scene.preset_intrinsics(intrinsics,[True] * len(intrinsics))
+    loss = scene.compute_global_alignment(init="known_poses", niter=300, schedule=schedule, lr=lr)
 
     # Extract scene information
     extrinsics_w2c = inv(to_numpy(scene.get_im_poses()))
@@ -54,7 +59,8 @@ def main(source_path, model_path, ckpt_path, device, batch_size, image_size, sch
     imgs = np.array(scene.imgs)
     pts3d = to_numpy(scene.get_pts3d())
     pts3d = np.array(pts3d)
-    depthmaps = to_numpy(scene.im_depthmaps.detach().cpu().numpy())
+    depthmaps = to_numpy([param.detach().cpu().numpy() for param in scene.im_depthmaps])
+    depthmaps = np.array(depthmaps)
     values = [param.detach().cpu().numpy() for param in scene.im_conf]
     confs = np.array(values)
     
