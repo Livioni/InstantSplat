@@ -5,6 +5,40 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "dust3r",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "infer.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model", "DUSt3R",
+                "-s",
+                "assets/carla/town10",
+                "-m",
+                "output_infer/carla/town10/test",
+                "--n_views",
+                "8",
+                "--infer_video",
+            ]
+        },
+        {
+            "name": "mast3r",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "infer.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model", "MASt3R",
+                "-s",
+                "assets/carla/town10",
+                "-m",
+                "output_infer/carla/town10/test",
+                "--n_views",
+                "8",
+                "--infer_video",
+            ]
+        },
+        {
             "name": "Render",
             "type": "debugpy",
             "request": "launch",
