@@ -536,7 +536,7 @@ def forward_mast3r(pairs, model, cache_path, desc_conf='desc_conf',
         path_corres2 = cache_path + f'/corres_conf={desc_conf}_{subsample=}/{idx2}-{idx1}.pth'
 
         if os.path.isfile(path_corres2) and not os.path.isfile(path_corres):
-            score, (xy1, xy2, confs) = torch.load(path_corres2)
+            score, (xy1, xy2, confs) = torch.load(path_corres2, weights_only=False)
             torch.save((score, (xy2, xy1, confs)), path_corres)
 
         if not all(os.path.isfile(p) for p in (path1, path2, path_corres)):
@@ -579,7 +579,7 @@ def symmetric_inference(model, img1, img2, device):
 
     def decoder(feat1, feat2, pos1, pos2, shape1, shape2):
         dec1, dec2 = model._decoder(feat1, pos1, feat2, pos2)
-        with torch.cuda.amp.autocast(enabled=False):
+        with torch.amp.autocast("cuda", enabled=False):
             res1 = model._downstream_head(1, [tok.float() for tok in dec1], shape1)
             res2 = model._downstream_head(2, [tok.float() for tok in dec2], shape2)
         return res1, res2

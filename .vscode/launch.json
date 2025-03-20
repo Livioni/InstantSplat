@@ -18,7 +18,9 @@
                 "output_infer/carla/town10/test",
                 "--n_views",
                 "8",
-                "--infer_video",
+                "--niter", "1000",
+                "--camera_params_path", "assets/carla/town10/params",
+                "--infer_video"
             ]
         },
         {
@@ -35,7 +37,8 @@
                 "output_infer/carla/town10/test",
                 "--n_views",
                 "8",
-                "--infer_video",
+                "--camera_params_path", "assets/carla/town10/params",
+                "--infer_video"
             ]
         },
         {
@@ -48,7 +51,7 @@
                 "-s",
                 "assets/carla/town10",
                 "-m",
-                "output_infer/carla/town10/8_views",
+                "output_infer/carla/town10/8_views_w_mask",
                 "--n_views",
                 "8",
                 "--iterations",  "1000",
@@ -66,7 +69,7 @@
                 "-s",
                 "assets/carla/town10",
                 "-m",
-                "output_infer/carla/town10/8_views",
+                "output_infer/carla/town10/8_views_w_mask",
                 "-r",
                 "1",
                 "--n_views",
@@ -74,7 +77,8 @@
                 "--iterations",
                 "1000",
                 "--pp_optimizer",
-                "--optim_pose"
+                "--optim_pose",
+                "--test_iterations", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000",
             ]
         },
         {
@@ -87,13 +91,14 @@
                 "-s",
                 "assets/carla/town10",
                 "-m",
-                "output_infer/carla/town10/6_views",
+                "output_infer/carla/town10/8_views_w_mask",
                 "--n_views",
                 "8",
                 "--focal_avg",
                 "--co_vis_dsp",
                 "--conf_aware_ranking",
                 "--infer_video",
+                "--ckpt_path", "naver/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric"
             ]
         },
         {

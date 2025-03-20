@@ -18,7 +18,7 @@ from argparse import ArgumentParser
 import torch
 import torchvision
 from tqdm import tqdm
-import imageio
+import imageio.v2 as imageio
 import numpy as np
 from pathlib import Path
 
@@ -73,7 +73,7 @@ def images_to_video(image_folder, output_video_path, fps=30):
             image = imageio.imread(image_path)
             images.append(image)
 
-    imageio.mimwrite(output_video_path, images, fps=fps)
+    imageio.mimwrite(output_video_path, images)
 
 def render_set(model_path, name, iteration, views, gaussians, pipeline, background):
     render_path = os.path.join(model_path, name, "ours_{}".format(iteration), "renders")

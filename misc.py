@@ -95,7 +95,7 @@ def depth_to_pointcloud(
     pcd.colors = o3d.utility.Vector3dVector(np.array(colors, dtype=np.float32))
     return pcd
 
-def read_params_from_json(root_path, files, old_size=(1920, 1080), new_size=(512, 288)):
+def read_params_from_json(root_path, files, if_scale=False, old_size=(1920,1080), new_size=(512, 288)):
     intrinsics = []
     extrinsics = []
     for parmas_file in files:
@@ -105,8 +105,8 @@ def read_params_from_json(root_path, files, old_size=(1920, 1080), new_size=(512
             data = json.load(f)
         K = np.around(np.array(data["intrinsic"]["K"]),decimals=4)
         T = np.around(np.array(data["extrinsic"]["T"]),decimals=4)
-        
-        K = scale_intrinsics(K, old_size, new_size)
+        if if_scale:
+            K = scale_intrinsics(K, old_size, new_size)
         T = pose_unreal2opencv(T)
         intrinsics.append(K)
         extrinsics.append(T)

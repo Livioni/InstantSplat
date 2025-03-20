@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from matplotlib import pyplot as pl
 
-import mast3r.utils.path_to_dust3r  # noqa
+# import mast3r.utils.path_to_dust3r  # noqa
 from dust3r.utils.geometry import depthmap_to_pts3d, geotrf, inv
 from dust3r.cloud_opt.base_opt import clean_pointcloud
 

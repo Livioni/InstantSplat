@@ -22,7 +22,8 @@ from utils.camera_utils import generate_interpolated_path
 from misc import read_params_from_json
 
 def main(source_path, model_path, ckpt_path, device, batch_size, image_size, schedule, lr, niter, 
-         min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, conf_aware_ranking=False, focal_avg=False, infer_video=False):
+         min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, conf_aware_ranking=False, focal_avg=False, infer_video=False, 
+         parmas_file_path = "assets/carla/town10/params"):
 
     # ---------------- (1) Load model and images ----------------  
     save_path, sparse_0_path, sparse_1_path = init_filestructure(Path(source_path), n_views)
@@ -37,9 +38,9 @@ def main(source_path, model_path, ckpt_path, device, batch_size, image_size, sch
     # when geometry init, only use train images
     image_files = train_img_files
     images, org_imgs_shape = load_images(image_files, size=image_size)
-    parmas_file_path = "assets/carla/town10/params"
     parmas_files = np.sort(os.listdir(parmas_file_path))
-    intrinsics, extrinsics = read_params_from_json(parmas_file_path, parmas_files, old_size=(1920, 1080), new_size=(512, 288))
+    intrinsics, extrinsics = read_params_from_json(parmas_file_path, parmas_files, if_scale = True,
+                                                   old_size=(1920, 1080), new_size=(512, 288))
     
     start_time = time()
     print(f'>> Making pairs...')
@@ -155,7 +156,9 @@ if __name__ == "__main__":
     parser.add_argument('--co_vis_dsp', action="store_true")
     parser.add_argument('--depth_thre', type=float, default=0.01, help='Depth threshold')
     parser.add_argument('--infer_video', action="store_true")
+    parser.add_argument('--parmas_file_path',type=str, default="assets/carla/town10/params", help='Directory containing cameras parameters.')
 
     args = parser.parse_args()
     main(args.source_path, args.model_path, args.ckpt_path, args.device, args.batch_size, args.image_size, args.schedule, args.lr, args.niter,         
-          args.min_conf_thr, args.llffhold, args.n_views, args.co_vis_dsp, args.depth_thre, args.conf_aware_ranking, args.focal_avg, args.infer_video)
+          args.min_conf_thr, args.llffhold, args.n_views, args.co_vis_dsp, args.depth_thre, args.conf_aware_ranking, args.focal_avg, args.infer_video, 
+          args.parmas_file_path)

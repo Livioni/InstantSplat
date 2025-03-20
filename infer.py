@@ -18,11 +18,12 @@ from dust3r.inference import inference
 from dust3r.utils.device import to_numpy
 from dust3r.utils.geometry import inv
 from dust3r.cloud_opt import global_aligner, GlobalAlignerMode
-from utils.sfm_utils import ( save_points3D, save_time, init_filestructure, get_sorted_image_files, split_train_test, load_images)
+from utils.sfm_utils import ( save_points3D, save_time, init_filestructure, 
+                             get_sorted_image_files, split_train_test, load_images, save_intrinsics, save_extrinsic)
 from misc import read_params_from_json
 
 def main(source_path, model_path, model_name, device, image_size, schedule, lr, niter, 
-         min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, infer_video=False):
+         min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, infer_video=False, parmas_file_path = "assets/carla/town10/params"):
 
     # ---------------- (1) Load model and images ----------------  
     save_path, sparse_0_path, sparse_1_path = init_filestructure(Path(source_path), n_views)
@@ -42,20 +43,17 @@ def main(source_path, model_path, model_name, device, image_size, schedule, lr, 
     # when geometry init, only use train images
     image_files = train_img_files
     images, org_imgs_shape = load_images(image_files, size=image_size)
-    parmas_file_path = "assets/carla/town10/params"
     parmas_files = np.sort(os.listdir(parmas_file_path))
-    intrinsics, extrinsics = read_params_from_json(parmas_file_path, parmas_files, old_size=(1920, 1080), new_size=(512, 288))
+    intrinsics, extrinsics = read_params_from_json(parmas_file_path, parmas_files,
+                                                   if_scale = True, old_size=(1920, 1080), new_size=(512, 288))
     
     start_time = time()
     print(f'>> Making pairs...')
     pairs = make_pairs(images, scene_graph='complete', prefilter=None, symmetrize=True)
-    print(f'>> Inference...')
-    output = inference(pairs, model, device, batch_size=1, verbose=True)
-    print(f'>> Global alignment...')
     if model_name == 'MASt3R':
-        lr1=0.07
+        lr1=0.08
         niter1=500
-        lr2=0.014
+        lr2=0.015
         niter2=300
         matching_conf_thr=5.0
         optim_level='refine+depth'
@@ -66,6 +64,8 @@ def main(source_path, model_path, model_name, device, image_size, schedule, lr, 
                                         opt_depth='depth' in optim_level, shared_intrinsics=shared_intrinsics,
                                         matching_conf_thr=matching_conf_thr)
     else:
+        print(f'>> Inference...')
+        output = inference(pairs, model, device, batch_size=1, verbose=True)
         scene = global_aligner(output, device=args.device, mode=GlobalAlignerMode.ModularPointCloudOptimizer, fx_and_fy=True)
         scene.preset_pose(extrinsics,[True] * len(extrinsics))
         scene.preset_intrinsics(intrinsics,[True] * len(intrinsics))
@@ -73,7 +73,6 @@ def main(source_path, model_path, model_name, device, image_size, schedule, lr, 
 
     # Extract scene information
     if model_name == 'DUSt3R':
-        intrinsics = to_numpy(scene.get_intrinsics())
         focals = to_numpy(scene.get_focals())
         imgs = np.array(scene.imgs)
         pts3d = to_numpy(scene.get_pts3d())
@@ -121,7 +120,8 @@ if __name__ == "__main__":
     parser.add_argument('--co_vis_dsp', action="store_true")
     parser.add_argument('--depth_thre', type=float, default=0.01, help='Depth threshold')
     parser.add_argument('--infer_video', action="store_true")
+    parser.add_argument('--camera_params_path', type=str, required=True, default="assets/carla/town10/params", help='Directory containing camera parameters')
 
     args = parser.parse_args()
     main(args.source_path, args.model_path, args.model, args.device, args.image_size, args.schedule, args.lr, args.niter,         
-          args.min_conf_thr, args.llffhold, args.n_views, args.co_vis_dsp, args.depth_thre, args.infer_video)
+          args.min_conf_thr, args.llffhold, args.n_views, args.co_vis_dsp, args.depth_thre, args.infer_video, args.camera_params_path)

@@ -19,7 +19,7 @@ import shutil
 from mast3r.cloud_opt.sparse_ga import sparse_global_alignment
 from mast3r.cloud_opt.tsdf_optimizer import TSDFPostProcess
 
-import mast3r.utils.path_to_dust3r  # noqa
+# import mast3r.utils.path_to_dust3r  # noqa
 from dust3r.image_pairs import make_pairs
 from dust3r.utils.image import load_images
 from dust3r.utils.device import to_numpy
@@ -102,25 +102,20 @@ def _convert_scene_output_to_glb(outfile, imgs, pts3d, mask, focals, cams2world,
     rot = np.eye(4)
     rot[:3, :3] = Rotation.from_euler('y', np.deg2rad(180)).as_matrix()
     scene.apply_transform(np.linalg.inv(cams2world[0] @ OPENGL @ rot))
+    outfile = os.path.join(outfile, 'scene.glb')
     if not silent:
         print('(exporting 3D scene to', outfile, ')')
     scene.export(file_obj=outfile)
     return outfile
 
 
-def get_3D_model_from_scene(silent, scene_state, min_conf_thr=2, as_pointcloud=False, mask_sky=False,
+def get_3D_model_from_scene(outfile, silent, scene, min_conf_thr=2, as_pointcloud=False, mask_sky=False,
                             clean_depth=False, transparent_cams=False, cam_size=0.05, TSDF_thresh=0):
     """
     extract 3D_model (glb file) from a reconstructed scene
     """
-    if scene_state is None:
-        return None
-    outfile = scene_state.outfile_name
-    if outfile is None:
-        return None
 
     # get optimized values from scene
-    scene = scene_state.sparse_ga
     rgbimg = scene.imgs
     focals = scene.get_focals().cpu()
     cams2world = scene.get_im_poses().cpu()
