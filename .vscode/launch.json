@@ -5,21 +5,33 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "dust3r-sfm",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "dust3r_sfm.py",
+            "console": "integratedTerminal",
+            "args": ["-s", "assets/carla/town10",
+                    "--parmas_file_path", "assets/carla/town10/params",]
+        },
+        {
             "name": "dust3r",
             "type": "debugpy",
             "request": "launch",
             "program": "infer.py",
             "console": "integratedTerminal",
             "args": [
-                "--model", "DUSt3R",
+                "--model",
+                "DUSt3R",
                 "-s",
                 "assets/carla/town10",
                 "-m",
                 "output_infer/carla/town10/test",
                 "--n_views",
                 "8",
-                "--niter", "1000",
-                "--camera_params_path", "assets/carla/town10/params",
+                "--niter",
+                "1000",
+                "--camera_params_path",
+                "assets/carla/town10/params",
                 "--infer_video"
             ]
         },
@@ -30,14 +42,16 @@
             "program": "infer.py",
             "console": "integratedTerminal",
             "args": [
-                "--model", "MASt3R",
+                "--model",
+                "MASt3R",
                 "-s",
                 "assets/carla/town10",
                 "-m",
                 "output_infer/carla/town10/test",
                 "--n_views",
                 "8",
-                "--camera_params_path", "assets/carla/town10/params",
+                "--camera_params_path",
+                "assets/carla/town10/params",
                 "--infer_video"
             ]
         },
@@ -54,8 +68,10 @@
                 "output_infer/carla/town10/8_views_w_mask",
                 "--n_views",
                 "8",
-                "--iterations",  "1000",
-                "-r", "1",
+                "--iterations",
+                "1000",
+                "-r",
+                "1",
                 "--infer_video",
             ]
         },
@@ -78,7 +94,17 @@
                 "1000",
                 "--pp_optimizer",
                 "--optim_pose",
-                "--test_iterations", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000",
+                "--test_iterations",
+                "100",
+                "200",
+                "300",
+                "400",
+                "500",
+                "600",
+                "700",
+                "800",
+                "900",
+                "1000",
             ]
         },
         {
@@ -98,7 +124,8 @@
                 "--co_vis_dsp",
                 "--conf_aware_ranking",
                 "--infer_video",
-                "--ckpt_path", "naver/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric"
+                "--ckpt_path",
+                "naver/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric"
             ]
         },
         {

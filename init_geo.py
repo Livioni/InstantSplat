@@ -19,7 +19,7 @@ from dust3r.cloud_opt import global_aligner, GlobalAlignerMode
 from utils.sfm_utils import (save_intrinsics, save_extrinsic, save_points3D, save_time, save_images_and_masks,
                              init_filestructure, get_sorted_image_files, split_train_test, load_images, compute_co_vis_masks)
 from utils.camera_utils import generate_interpolated_path
-from misc import read_params_from_json
+from utils.misc import read_params_from_json
 
 def main(source_path, model_path, ckpt_path, device, batch_size, image_size, schedule, lr, niter, 
          min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, conf_aware_ranking=False, focal_avg=False, infer_video=False, 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     parser.add_argument('--source_path', '-s', type=str, required=True, help='Directory containing images')
     parser.add_argument('--model_path', '-m', type=str, required=True, help='Directory to save the results')
     parser.add_argument('--ckpt_path', type=str,
-        default='./mast3r/checkpoints/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth', help='Path to the model checkpoint')
+        default='naver/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric', help='Path to the model checkpoint')
     parser.add_argument('--device', type=str, default='cuda', help='Device to use for inference')
     parser.add_argument('--batch_size', type=int, default=1, help='Batch size for processing images')
     parser.add_argument('--image_size', type=int, default=512, help='Size to resize images')

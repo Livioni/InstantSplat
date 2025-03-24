@@ -20,7 +20,7 @@ from dust3r.utils.geometry import inv
 from dust3r.cloud_opt import global_aligner, GlobalAlignerMode
 from utils.sfm_utils import ( save_points3D, save_time, init_filestructure, 
                              get_sorted_image_files, split_train_test, load_images, save_intrinsics, save_extrinsic)
-from misc import read_params_from_json
+from utils.misc import read_params_from_json
 
 def main(source_path, model_path, model_name, device, image_size, schedule, lr, niter, 
          min_conf_thr, llffhold, n_views, co_vis_dsp, depth_thre, infer_video=False, parmas_file_path = "assets/carla/town10/params"):
